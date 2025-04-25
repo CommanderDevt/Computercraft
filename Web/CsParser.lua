@@ -1,10 +1,5 @@
 local content = ...
 
---DEBUG--
-local file = fs.open("example.ccs","r")
-content = file.readAll()
-file.close()
-
 function trim(s)
     return s:match("^%s*(.-)%s*$")
 end
