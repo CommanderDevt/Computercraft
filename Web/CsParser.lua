@@ -20,19 +20,64 @@ function ParseText(s)
     end
 end
 
-local RVars = {x="|1|"}
+local RVars = {}
 
 local Expressions = {
-    add = function(v1,v2)
+    ["plus"] = function(v1,v2)
         v1 = tonumber(v1)
         v2 = tonumber(v2)
         return tostring(v1+v2)
     end,
-    equals = function(v1,v2)
+    ["equals"] = function(v1,v2)
         return tostring(v1==v2)
+    end,
+    ["more"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1>v2)
+    end,
+    ["less"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1<v2)
+    end,
+    ["moreequal"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1>=v2)
+    end,
+    ["lessequal"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1<=v2)
     end,
     ["not"] = function(v1)
         if v1 == "true" then return "false" elseif v1 == "false" then return "true" end
+    end,
+    ["minus"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1-v2)
+    end,
+    ["multiply"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1*v2)
+    end,
+    ["divide"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1/v2)
+    end,
+    ["modulus"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1%v2)
+    end,
+    ["exponent"] = function(v1,v2)
+        v1 = tonumber(v1)
+        v2 = tonumber(v2)
+        return tostring(v1^v2)
     end
 }
 Expressions.same = Expressions.equals
