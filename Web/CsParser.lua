@@ -1,5 +1,10 @@
 local content = ...
 
+--DEBUG--
+local file = fs.open("example.ccs","r")
+content = file.readAll()
+file.close()
+
 function trim(s)
     return s:match("^%s*(.-)%s*$")
 end
@@ -78,6 +83,25 @@ local Expressions = {
         v1 = tonumber(v1)
         v2 = tonumber(v2)
         return tostring(v1^v2)
+    end,
+    ["second"] = function()
+        local currentTime = os.time()
+        currentTime=currentTime*60
+        local fractionalPart = currentTime % 1.2
+        local currentSecond = math.floor((fractionalPart / 0.020) % 60)
+        return currentSecond
+    end,
+    ["minute"] = function()
+        local currentTime = os.time()
+        local mfractionalPart = currentTime/60
+        local currentMinute = math.floor((mfractionalPart / 0.020)%60)
+        return currentMinute
+    end,
+    ["hour"] = function()
+        local currentTime = os.time()
+        local hfractionalPart = currentTime/3600
+        local currentHour = math.floor((hfractionalPart / 0.020)%24)
+        return currentHour
     end
 }
 Expressions.same = Expressions.equals
@@ -253,15 +277,18 @@ function executeCode(code)
             local newText = line
             local Init = 1
             repeat
-                local startBrace = line:find("{", Init)
+                local startBrace = newText:find("{", Init)
                 if startBrace then
-                    Init = startBrace + 1
-                    local endBrace = line:find("}", Init)
+                    Init = startBrace
+                    local endBrace = newText:find("}", Init)
                     if endBrace then
-                        Init = endBrace + 1
-                        local varName = line:sub(startBrace + 1, endBrace - 1)
+                        Init = endBrace
+                        local varName = newText:sub(startBrace + 1, endBrace - 1)
                         if RVars[varName] then
+                            local diff = #newText
                             newText = InverseSub(newText, ParseText(RVars[varName]), startBrace, endBrace)
+                            diff = #newText-diff
+                            Init = Init + diff
                         end
                     else
                         print("Malformed Variable")
@@ -275,11 +302,14 @@ function executeCode(code)
             repeat
                 local startBrace = newText:find("%[", Init)
                 if startBrace then
-                    Init = startBrace + 1
+                    Init = startBrace 
                     local endBrace = newText:find("%]", Init)
                     if endBrace then
-                        Init = endBrace + 1
+                        Init = endBrace
+                        local diff = #newText
                         newText = InverseSub(newText, ParseExpression(newText:sub(startBrace, endBrace)), startBrace, endBrace)
+                        diff = #newText-diff
+                        Init = Init + diff
                     else
                         print("Malformed Expression")
                         break
